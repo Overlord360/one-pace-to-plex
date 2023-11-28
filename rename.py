@@ -4,6 +4,8 @@ import re
 import json
 import argparse
 
+from Modules import FileIO
+
 args = None
 
 # set_ref_file_vars sets the chapterepisode reference files as global variables
