@@ -9,7 +9,7 @@ def hello():
 
 # load_json_file takes a JSON file path
 # and returns a JSON object of it.
-def load_json_file(file, episode_mapping):
+def load_json_file(file):
     with open(file) as f:
         try:
             episode_mapping = json.load(f)

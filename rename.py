@@ -76,7 +76,7 @@ def main():
     if args["directory"] is None:
         args["directory"] = getcwd()
 
-    set_mapping(FileIO.load_json_file(episodes_ref_file, episode_mapping), FileIO.load_json_file(chapters_ref_file, episode_mapping))
+    set_mapping(FileIO.load_json_file(episodes_ref_file), FileIO.load_json_file(chapters_ref_file))
 
     video_files = FileIO.get_files_from_directories(args["directory"], args["recurse"])
 
