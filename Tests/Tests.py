@@ -44,6 +44,21 @@ class TestRenameFunctions(unittest.TestCase):
         
 
 class TestFileIOFunctions(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        if not os.path.isdir("One Piece [tvdb4-81797]"):
+            os.mkdir("One Piece [tvdb4-81797]")
+        if not os.path.isdir(os.path.join("One Piece [tvdb4-81797]","test1")):
+            os.mkdir(os.path.join("One Piece [tvdb4-81797]","test1"))
+    
+    @classmethod
+    def tearDownClass(cls):
+        if os.path.isdir("One Piece [tvdb4-81797]"):
+            if os.path.isdir(os.path.join("One Piece [tvdb4-81797]","test1")):
+                os.rmdir(os.path.join("One Piece [tvdb4-81797]","test1"))
+            os.rmdir("One Piece [tvdb4-81797]")
+
     
     #unit test for FileIO.hello()
     @patch("Modules.FileIO.print")
@@ -131,6 +146,93 @@ class TestFileIOFunctions(unittest.TestCase):
         
         assert mock_walk.called
         assert len(files) == 2
+
+    #unit test for FileIO.get_biggest_number_from_ref()
+    def test_get_biggest_number_from_ref(self):
+        string = "E1"
+        assert FileIO.get_biggest_number_from_ref(string) == 1
+
+        string = "S00E36"
+        assert FileIO.get_biggest_number_from_ref(string) == 36
+
+        string = "E628-E630"
+        assert FileIO.get_biggest_number_from_ref(string) == 630
+
+        string = ""
+        assert FileIO.get_biggest_number_from_ref(string) == -1
+
+        string = None
+        assert FileIO.get_biggest_number_from_ref(string) == -1
+
+        string = "invalid_string"
+        assert FileIO.get_biggest_number_from_ref(string) == -1
+
+    #unit test for FileIO.get_smallest_number_from_ref()
+    def test_get_smallest_number_from_ref(self):
+        string = "E1"
+        assert FileIO.get_smallest_number_from_ref(string) == 1
+
+        string = "S00E36"
+        assert FileIO.get_smallest_number_from_ref(string) == 36
+
+        string = "E628-E630"
+        assert FileIO.get_smallest_number_from_ref(string) == 628
+
+        string = ""
+        assert FileIO.get_smallest_number_from_ref(string) == 9999
+
+        string = None
+        assert FileIO.get_smallest_number_from_ref(string) == 9999
+
+        string = "invalid_string"
+        assert FileIO.get_smallest_number_from_ref(string) == 9999
+    
+    #unit test for FileIO.generate_tvdb()
+    @patch("Modules.FileIO.print")
+    def test_generate_tvdb(self, mock_print):
+        
+        with self.assertRaises(FileNotFoundError):
+            FileIO.generate_tvdb("./not-a-file.json", dry_run=True)
+        
+        with self.assertRaises(FileNotFoundError):
+            FileIO.generate_tvdb("./not-a-file.json", dry_run=False)
+        
+        with patch.object(FileIO, "exit", return_value=None) as mock_exit:
+            with self.assertRaises(UnboundLocalError): #required as "episode_mapping" is not defined and exit has been patched
+                FileIO.generate_tvdb("./invalid.json", dry_run=False)
+            mock_exit.assert_called_once
+            mock_print.assert_called_with("Failed to load the file \"./invalid.json\": Expecting value: line 1 column 1 (char 0)")
+
+        FileIO.generate_tvdb("./episodes-test.json", dry_run=True)
+        #TODO: test that it works with dry_run=False
+    
+    @patch("Modules.FileIO.shutil.copy")
+    @patch("Modules.FileIO.print")
+    @patch("Modules.FileIO.sys.stderr.write")
+    @patch("Modules.FileIO.sys.stderr.flush")
+    def test_copy_tvdb(self, mock_flush, mock_err, mock_print, mock_copy):
+        with self.assertRaises(NotADirectoryError):
+            FileIO.copy_tvdb("./not-a-directory")
+        
+        FileIO.copy_tvdb("./", dry_run=True)
+        mock_print.assert_called_with('DRYRUN: copy "tvdb4.mapping" -> "./One Piece [tvdb4-81797]\\test1"')
+    
+    @patch("Modules.FileIO.print")
+    @patch("Modules.FileIO.mkdir")
+    @patch("Modules.FileIO.sys.stderr.write")
+    def test_generate_file_structure(self,mock_err, mock_mkdir, mock_print):
+        with self.assertRaises(NotADirectoryError):
+            FileIO.generate_file_structure("./not-a-directory")
+        
+        FileIO.generate_file_structure("./", dry_run=True)
+        assert mock_print.called_with("DRYRUN: mkdir \"./One Piece [tvdb4-81797]\\Romance Dawn\"")
+        
+        FileIO.generate_file_structure("./")
+        assert mock_mkdir.called_with("./One Piece [tvdb4-81797]\\Romance Dawn")
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

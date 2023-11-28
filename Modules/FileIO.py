@@ -68,7 +68,7 @@ def generate_file_structure(directory, dry_run=False):
         if not dry_run:
             mkdir(path)
         else:
-            print("mkdir \"{}\"".format(path))
+            print("DRYRUN: mkdir \"{}\"".format(path))
     else:
         print("Directory \"{}\" already exists, moving on...".format(path))
     
@@ -83,7 +83,7 @@ def generate_file_structure(directory, dry_run=False):
             if not dry_run:
                 mkdir(arc_path)
             else:
-                print("mkdir \"{}\"".format(arc_path))
+                print("DRYRUN: mkdir \"{}\"".format(arc_path))
         else:
             print("Directory \"{}\" already exists, moving on...".format(folder_name))
     
@@ -108,9 +108,11 @@ def copy_tvdb(directory, dry_run=False):
         if not dry_run:
             shutil.copy("tvdb4.mapping", dir)
         else:
-            print("copy \"tvdb4.mapping\" -> \"{}\"".format(dir))
+            print("DRYRUN: copy \"tvdb4.mapping\" -> \"{}\"".format(dir))
 
-def generate_tvdb(file):
+def generate_tvdb(file, dry_run=False):
+    print("Generating TVDB file from episodes-reference.json")
+
     episode_mapping = load_json_file(file)
 
     index = 1
@@ -139,7 +141,6 @@ def generate_tvdb(file):
             end_episode = 3 #special case for first arc
 
         tvdb_line += "{:04d}".format(end_episode) + "|" + f"{arc} Arc"
-        print(tvdb_line)
         tvdb_mapping.append(tvdb_line)
         index += 1
         final_arc = f"{arc} Arc"
@@ -148,9 +149,14 @@ def generate_tvdb(file):
     finalLine = "{:02d}".format(index-1) + "|" + "{:04d}".format(start_episode) + "|"+"{:04d}".format(start_episode)+f"|{final_arc} (unknown length)"
     tvdb_mapping[-1] = finalLine
     
-    with open("TESTtvdb4.mapping", "w") as f:
+    if not dry_run:
+        with open("tvdb4.mapping", "w") as f:
+            for line in tvdb_mapping:
+                f.write(line + "\n")
+    else:
+        print("DRYRUN: New \"tvdb4.mapping\" would be:")
         for line in tvdb_mapping:
-            f.write(line + "\n")
+            print(line)
 
 
 #get the biggest number from an episode number reference string
