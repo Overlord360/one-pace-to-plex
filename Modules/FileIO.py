@@ -1,5 +1,6 @@
 import sys
 import json
+import shutil
 
 from os import listdir, walk, mkdir
 from os.path import isfile, join, abspath, isdir
@@ -88,6 +89,26 @@ def generate_file_structure(directory, dry_run=False):
     
     print("Successfully generated file structure in directory")
 
+def copy_tvdb(directory, dry_run=False):
+    #check if directory exists
+    directory = join(directory, "One Piece [tvdb4-81797]")
+    if not isdir(directory):
+        sys.stderr.write("Directory \"{}\" doesn't exist".format(directory))
+        sys.stderr.flush()
+        raise NotADirectoryError(directory)
+    
+    print("Copying TVDB file to all subdirectories in \"{}\"".format(directory))
+    
+    #get all subdirectories
+    subdirs = [x[0] for x in walk(directory)]
+    #print(subdirs)
+    
+    #copy tvdb file to all subdirectories
+    for dir in subdirs[1:]:
+        if not dry_run:
+            shutil.copy("tvdb4.mapping", dir)
+        else:
+            print("copy \"tvdb4.mapping\" -> \"{}\"".format(dir))
 
 if __name__ == "__main__":
     print("Don't run this file... Try RTFM!")

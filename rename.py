@@ -63,13 +63,14 @@ def generate_new_name_for_episode(original_file_name):
 
 def main():
     parser = argparse.ArgumentParser(description='Rename One Pace files to a format Plex understands')
-    parser.add_argument("-g","--generate", action="store_true", help="If this flag is passed, the script will generate file structure based on the TVDB file")
+    parser.add_argument("-g","--generate", action="store_true", help="If this flag is passed, the script will generate file structure based on the TVDB file (it also copies the TVDB file into the directories.). Exits when done")
+    parser.add_argument("-u", "--update", action="store_true", help="If this flag is passed, the script will update the TVDB file in all sub directories (used to copy one (newer) TVBD file to all arc directories). Exits when done")
     parser.add_argument("-rf", "--reference-file", nargs='?', help="Path to the episodes reference file", default="episodes-reference.json")
     parser.add_argument("-crf", "--chapter-reference-file", nargs='?', help="Path to the chapters reference file", default="chapters-reference.json")
     parser.add_argument("-d", "--directory", nargs='?', help="Data directory (aka path where the mkv files are)", default=None)
     parser.add_argument("--dry-run", action="store_true", help="If this flag is passed, the output will only show how the files would be renamed")
     parser.add_argument("-r", "--recurse", action="store_true", help="If this flag is passed, the script will search for mkv files in subdirectories as well")
-    parser.add_argument("-gr","--generate-reference", action="store_true", help="If this flag is passed, the script will generate the TVDB file based on reference files (shouldn't need to be run unless you edited the reference files)")
+    parser.add_argument("-gr","--generate-reference", action="store_true", help="If this flag is passed, the script will generate the TVDB file based on reference files (shouldn't need to be run unless you edited the reference files). Exists when done")
     args = vars(parser.parse_args())
 
 
@@ -86,6 +87,12 @@ def main():
 
     if args["generate"]:
         FileIO.generate_file_structure(args["directory"], args["dry_run"])
+        if not args["dry_run"]:
+            FileIO.copy_tvdb(args["directory"])
+        return
+    
+    if args["update"]:
+        FileIO.copy_tvdb(args["directory"], args["dry_run"])
         return
     
 
