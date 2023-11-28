@@ -1,7 +1,6 @@
-from os import listdir, rename, getcwd, walk
-from os.path import isfile, join, abspath, basename, dirname, relpath
+from os import rename, getcwd
+from os.path import join, basename, dirname, relpath
 import re
-import json
 import argparse
 
 from Modules import FileIO
@@ -24,40 +23,6 @@ def set_mapping(episode_mapping_value, chapter_mapping_value):
     episode_mapping = episode_mapping_value
     global chapter_mapping
     chapter_mapping = chapter_mapping_value
-
-
-# load_json_file takes a JSON file path
-# and returns a JSON object of it.
-def load_json_file(file):
-    with open(file) as f:
-        try:
-            episode_mapping = json.load(f)
-        except ValueError as e:
-            print("Failed to load the file \"{}\": {}".format(file, e))
-            exit
-
-    return episode_mapping
-
-def get_files_from_directories(directory, recurse=False):
-    video_files = list_mkv_files_in_directory(directory)
-    if recurse: # check if subdirectories should be searched
-        subdirs = [x[0] for x in walk(directory)] #recursively get all subdirectories
-        #print(subdirs)
-        for dir in subdirs[1:]: # loop through directories, skipping the first one (the root directory) as it's already done
-            video_files += list_mkv_files_in_directory(dir)
-    return video_files
-
-# list_mkv_files_in_directory returns all the files in the specified
-# directory that have the .mkv extention
-def list_mkv_files_in_directory(directory):
-    #get all filepaths for files in directory
-    files = [f for f in listdir(directory) if (isfile(join(directory, f)) and "mkv" in f)]
-    paths = []
-    for f in files:
-        paths.append(abspath(join(directory,f))) #get absolute path for each file
-    return paths
-    #return [f for f in listdir(directory) if (isfile(join(directory, f)) and "mkv" in f)]
-
 
 
 # generate_new_name_for_episode parses the original one pace file name
@@ -111,9 +76,9 @@ def main():
     if args["directory"] is None:
         args["directory"] = getcwd()
 
-    set_mapping(load_json_file(episodes_ref_file), load_json_file(chapters_ref_file))
+    set_mapping(FileIO.load_json_file(episodes_ref_file, episode_mapping), FileIO.load_json_file(chapters_ref_file, episode_mapping))
 
-    video_files = get_files_from_directories(args["directory"], args["recurse"])
+    video_files = FileIO.get_files_from_directories(args["directory"], args["recurse"])
 
     if len(video_files) == 0:
         print("No mkv files found in directory \"{}\"".format(args["directory"]))
