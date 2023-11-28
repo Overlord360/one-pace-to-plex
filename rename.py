@@ -1,8 +1,13 @@
-from os import listdir, rename, getcwd, walk
-from os.path import isfile, join, abspath, basename, dirname, relpath
+from os import rename, getcwd
+from os.path import join, basename, dirname, relpath
 import re
-import json
 import argparse
+
+from Modules import FileIO
+
+#TODO: Update README.md
+#TODO: Move renamed files to correct arc directory after renamed
+#TODO: Remove old directories if arcs are duplicated (e.g. if missing arc is added to the reference file and it shifts the arc numbers down)
 
 args = None
 
@@ -22,40 +27,6 @@ def set_mapping(episode_mapping_value, chapter_mapping_value):
     episode_mapping = episode_mapping_value
     global chapter_mapping
     chapter_mapping = chapter_mapping_value
-
-
-# load_json_file takes a JSON file path
-# and returns a JSON object of it.
-def load_json_file(file):
-    with open(file) as f:
-        try:
-            episode_mapping = json.load(f)
-        except ValueError as e:
-            print("Failed to load the file \"{}\": {}".format(file, e))
-            exit
-
-    return episode_mapping
-
-def get_files_from_directories(directory, recurse=False):
-    video_files = list_mkv_files_in_directory(directory)
-    if recurse: # check if subdirectories should be searched
-        subdirs = [x[0] for x in walk(directory)] #recursively get all subdirectories
-        #print(subdirs)
-        for dir in subdirs[1:]: # loop through directories, skipping the first one (the root directory) as it's already done
-            video_files += list_mkv_files_in_directory(dir)
-    return video_files
-
-# list_mkv_files_in_directory returns all the files in the specified
-# directory that have the .mkv extention
-def list_mkv_files_in_directory(directory):
-    #get all filepaths for files in directory
-    files = [f for f in listdir(directory) if (isfile(join(directory, f)) and "mkv" in f)]
-    paths = []
-    for f in files:
-        paths.append(abspath(join(directory,f))) #get absolute path for each file
-    return paths
-    #return [f for f in listdir(directory) if (isfile(join(directory, f)) and "mkv" in f)]
-
 
 
 # generate_new_name_for_episode parses the original one pace file name
@@ -96,11 +67,14 @@ def generate_new_name_for_episode(original_file_name):
 
 def main():
     parser = argparse.ArgumentParser(description='Rename One Pace files to a format Plex understands')
+    parser.add_argument("-g","--generate", action="store_true", help="If this flag is passed, the script will generate file structure based on the TVDB file (it also copies the TVDB file into the directories.). Exits when done")
+    parser.add_argument("-u", "--update", action="store_true", help="If this flag is passed, the script will update the TVDB file in all sub directories (used to copy one (newer) TVBD file to all arc directories). Exits when done")
     parser.add_argument("-rf", "--reference-file", nargs='?', help="Path to the episodes reference file", default="episodes-reference.json")
     parser.add_argument("-crf", "--chapter-reference-file", nargs='?', help="Path to the chapters reference file", default="chapters-reference.json")
     parser.add_argument("-d", "--directory", nargs='?', help="Data directory (aka path where the mkv files are)", default=None)
     parser.add_argument("--dry-run", action="store_true", help="If this flag is passed, the output will only show how the files would be renamed")
     parser.add_argument("-r", "--recurse", action="store_true", help="If this flag is passed, the script will search for mkv files in subdirectories as well")
+    parser.add_argument("-gr","--generate-reference", action="store_true", help="If this flag is passed, the script will generate the TVDB file based on reference files (shouldn't need to be run unless you edited the reference files). Exists when done")
     args = vars(parser.parse_args())
 
 
@@ -109,9 +83,24 @@ def main():
     if args["directory"] is None:
         args["directory"] = getcwd()
 
-    set_mapping(load_json_file(episodes_ref_file), load_json_file(chapters_ref_file))
+    set_mapping(FileIO.load_json_file(episodes_ref_file), FileIO.load_json_file(chapters_ref_file))
 
-    video_files = get_files_from_directories(args["directory"], args["recurse"])
+    if args["generate_reference"]:
+        FileIO.generate_tvdb(args["reference_file"], args["dry_run"])
+        return
+
+    if args["generate"]:
+        FileIO.generate_file_structure(args["directory"], args["dry_run"])
+        if not args["dry_run"]:
+            FileIO.copy_tvdb(args["directory"])
+        return
+    
+    if args["update"]:
+        FileIO.copy_tvdb(args["directory"], args["dry_run"])
+        return
+    
+
+    video_files = FileIO.get_files_from_directories(args["directory"], args["recurse"])
 
     if len(video_files) == 0:
         print("No mkv files found in directory \"{}\"".format(args["directory"]))
