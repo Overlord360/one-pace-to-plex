@@ -33,11 +33,11 @@ def set_mapping(episode_mapping_value, chapter_mapping_value):
 # and tries to match it with the reference episodes. 
 # It returns the new name the file should have
 def generate_new_name_for_episode(original_file_name):
-    reg = re.search(r'\[One Pace\]\[.*\] (.*?) (\d\d?) \[(\d+p)\].*\.mkv', original_file_name)
+    reg = re.search(r'\[One Pace\]\[.*\] (.*?) ?(\d\d?)? \[(\d+p)\].*\.mkv', original_file_name)
 
     if (reg is not None):
         arc_name = reg.group(1)
-        arc_ep_num = reg.group(2)
+        arc_ep_num = '01' if reg.group(2) is None else reg.group(2) # Arc 07 and Arc 11 missing ep num
         resolution = reg.group(3)
 
         arc = episode_mapping.get(arc_name)

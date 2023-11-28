@@ -6,29 +6,31 @@ Arc 03 - Syrup Village
 Arc 04 - Gaimon
 Arc 05 - Baratie
 Arc 06 - Arlong Park
-Arc 07 - Loguetown
-Arc 08 - Reverse Mountain
-Arc 09 - Whiskey Peak
-Arc 10 - Little Garden
-Arc 11 - Drum Island
-Arc 12 - Arabasta
-Arc 13 - Jaya
-Arc 14 - Skypiea
-Arc 15 - Long Ring Long Land
-Arc 16 - Water Seven
-Arc 17 - Enies Lobby
-Arc 18 - Post-Enies Lobby
-Arc 19 - Thriller Bark
-Arc 20 - Sabaody Archipelago
-Arc 21 - Amazon Lily
-Arc 22 - Impel Down
-Arc 23 - Marineford
-Arc 24 - Post-War
-Arc 25 - Return to Sabaody
-Arc 26 - Fishman Island
-Arc 27 - Punk Hazard
-Arc 28 - Dressrosa
-Arc 29 - Zou
-Arc 30 - Whole Cake Island
-Arc 31 - Reverie
-Arc 32 - Wano
+Arc 07 - The Adventures of Buggy's Crew
+Arc 08 - Loguetown
+Arc 09 - Reverse Mountain
+Arc 10 - Whiskey Peak
+Arc 11 - The Trials of Koby-Meppo
+Arc 12 - Little Garden
+Arc 13 - Drum Island
+Arc 14 - Arabasta
+Arc 15 - Jaya
+Arc 16 - Skypiea
+Arc 17 - Long Ring Long Land
+Arc 18 - Water Seven
+Arc 19 - Enies Lobby
+Arc 20 - Post-Enies Lobby
+Arc 21 - Thriller Bark
+Arc 22 - Sabaody Archipelago
+Arc 23 - Amazon Lily
+Arc 24 - Impel Down
+Arc 25 - Marineford
+Arc 26 - Post-War
+Arc 27 - Return to Sabaody
+Arc 28 - Fishman Island
+Arc 29 - Punk Hazard
+Arc 30 - Dressrosa
+Arc 31 - Zou
+Arc 32 - Whole Cake Island
+Arc 33 - Reverie
+Arc 34 - Wano
