@@ -5,6 +5,10 @@ import argparse
 
 from Modules import FileIO
 
+#TODO: Update README.md
+#TODO: Move renamed files to correct arc directory after renamed
+#TODO: Remove old directories if arcs are duplicated (e.g. if missing arc is added to the reference file and it shifts the arc numbers down)
+
 args = None
 
 # set_ref_file_vars sets the chapterepisode reference files as global variables

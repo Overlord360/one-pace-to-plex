@@ -158,6 +158,9 @@ def generate_tvdb(file, dry_run=False):
         for line in tvdb_mapping:
             print(line)
 
+############################
+### Supporting Functions ###
+############################
 
 #get the biggest number from an episode number reference string
 def get_biggest_number_from_ref(string):
