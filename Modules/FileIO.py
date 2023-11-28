@@ -110,6 +110,75 @@ def copy_tvdb(directory, dry_run=False):
         else:
             print("copy \"tvdb4.mapping\" -> \"{}\"".format(dir))
 
+def generate_tvdb(file):
+    episode_mapping = load_json_file(file)
+
+    index = 1
+    start_episode = 1
+    end_episode = 1
+    tvdb_mapping = []
+    for arc in episode_mapping:
+        tvdb_line = "{:02d}".format(index) + "|"
+        max = -2 #assume positive episode numbers
+        min = 99999
+        
+        for i in episode_mapping[arc].items():
+            val = get_biggest_number_from_ref(i[1])
+            if val > max:
+                max = val
+            val = get_smallest_number_from_ref(i[1])
+            if val < min:
+                min = val
+
+        start_episode = min
+        end_episode = max
+        
+        tvdb_line += "{:04d}".format(start_episode) + "|"
+
+        if index == 1:
+            end_episode = 3 #special case for first arc
+
+        tvdb_line += "{:04d}".format(end_episode) + "|" + f"{arc} Arc"
+        print(tvdb_line)
+        tvdb_mapping.append(tvdb_line)
+        index += 1
+        final_arc = f"{arc} Arc"
+        #episode += 1
+
+    finalLine = "{:02d}".format(index-1) + "|" + "{:04d}".format(start_episode) + "|"+"{:04d}".format(start_episode)+f"|{final_arc} (unknown length)"
+    tvdb_mapping[-1] = finalLine
+    
+    with open("TESTtvdb4.mapping", "w") as f:
+        for line in tvdb_mapping:
+            f.write(line + "\n")
+
+
+#get the biggest number from an episode number reference string
+def get_biggest_number_from_ref(string):
+    if string == "" or string is None:
+        return -1
+    string = string.split("-")[-1] #assume following episode will always be bigger
+    
+    
+    val = string.split("E")[-1] #get value after "E"
+    if val.isdigit():
+        return int(val)
+    else:
+        return -1
+
+#get the smallest number from an episode number reference string
+def get_smallest_number_from_ref(string):
+    if string == "" or string is None:
+        return 9999
+    string = string.split("-")[0] #assume following episode will always be bigger
+    
+    
+    val = string.split("E")[-1] #get value after "E"
+    if val.isdigit():
+        return int(val)
+    else:
+        return 9999
+
 if __name__ == "__main__":
     print("Don't run this file... Try RTFM!")
     sys.exit()

@@ -82,7 +82,7 @@ def main():
     set_mapping(FileIO.load_json_file(episodes_ref_file), FileIO.load_json_file(chapters_ref_file))
 
     if args["generate_reference"]:
-        print("Not implemented yet")
+        FileIO.generate_tvdb(args["reference_file"])
         return
 
     if args["generate"]:
