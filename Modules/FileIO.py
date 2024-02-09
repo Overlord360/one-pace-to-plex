@@ -74,8 +74,7 @@ def generate_file_structure(directory, dry_run=False):
     
     #generate arc folders
     for arc in tvdb_mapping:
-        
-        arc_name = arc[-1].split(" Arc")[0] #get arc name without " Arc" at the end
+        arc_name = arc[-1].rsplit(" Arc", 1)[0]
         folder_name = f"Arc {arc[0]} - {arc_name}"
 
         arc_path = join(path, folder_name)
